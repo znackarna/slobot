@@ -69,8 +69,14 @@ export function useDialog<T extends HTMLElement>(onClose?: () => void, active = 
     };
 
     element.addEventListener("keydown", onKeyDown);
+    // And it is now the front of the window, so anything the application has
+    // to say is said in here. See `openDialogs` below.
+    openDialogs.push(element);
+    tellTheListeners();
     return () => {
       element.removeEventListener("keydown", onKeyDown);
+      openDialogs = openDialogs.filter((open) => open !== element);
+      tellTheListeners();
       // Only when the focus has nowhere to be. Closing removes the element
       // that held it and the browser drops it on `body`; that is the case to
       // repair. A dialog that closed by opening another one has handed the
@@ -123,4 +129,42 @@ function stops(element: HTMLElement): HTMLElement[] {
   return Array.from(element.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
     (candidate) => candidate.getClientRects().length > 0
   );
+}
+
+/* ------------------------------------------------------- what is in front
+
+   **One place for what the application says, and it follows the front.**
+
+   The notice bar carries `z-index: 70` so a message raised while a dialog is
+   open is not lost behind the scrim — the fix for messages that used to vanish,
+   and the reason the wizard stopped drawing a panel of its own. What it left is
+   a coloured bar floating on a blurred backdrop, belonging to nothing on
+   screen, and painted over the dialog underneath. The owner met it on
+   8 September saving from the language model's dialog: *cele to pozadí je
+   rozmazane, nad tim je dialog a pak tam zacne viset ta lista*.
+
+   So the bar goes where the front is rather than staying where the page is.
+   Registered here because `useDialog` is the one door every modal in this
+   application goes through: no dialog gains a panel, and there is still one
+   bar, one component and one rule.
+
+   The last one registered is the front — a dialog opened over another is on
+   top of it, and this list is in the order they opened. */
+let openDialogs: HTMLElement[] = [];
+const listeners = new Set<() => void>();
+
+function tellTheListeners() {
+  for (const listener of listeners) listener();
+}
+
+/** The dialog a message should be shown in, or null for the page itself. */
+export function frontDialog(): HTMLElement | null {
+  return openDialogs[openDialogs.length - 1] ?? null;
+}
+
+export function watchFrontDialog(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
 }

@@ -981,6 +981,23 @@
   max-height: calc(100vh - 48px); overflow-y: auto;
   animation: dialog-nabehne 0.14s ease-out;
 }
+/* The notice, when one is open. The bar carries `z-index: 70` so a message is
+   never lost behind the scrim — and what that left was a coloured strip
+   floating on a blurred backdrop, belonging to nothing on screen. It is drawn
+   inside the dialog now (`NoticeBar` portals it to a host `useDialog` names),
+   so it belongs to the surface the reader is looking at.
+
+   Bled to the dialog's own edges by its padding, and the top corners are the
+   dialog's less its border, which is how an inset radius meets an outset one.
+   18 px below, the same gap the heading gives its sentence's content. */
+.dialog-notice { margin: -24px -26px 18px; }
+.dialog-notice .notice {
+  border-radius: calc(var(--r-large) - 1px) calc(var(--r-large) - 1px) 0 0;
+  /* Inside a dialog nothing can be painted over it, so the raising is not
+     needed — and leaving it would lift the bar over a dialog opened on top of
+     this one. */
+  z-index: auto;
+}
 @keyframes dialog-nabehne {
   from { opacity: 0; transform: translateY(6px) scale(0.98); }
   to   { opacity: 1; transform: none; }

@@ -4,8 +4,11 @@
  * The ring empties over exactly the time the timer waits, so the number lives
  * with the timer and the stylesheet only draws it.
  */
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import type { CSSProperties } from "react";
 import { useI18n } from "../i18n";
+import { frontDialog, watchFrontDialog } from "../useDialog";
 import CountdownRing from "../CountdownRing";
 import { NOTICE_LIFE } from "./useNotices";
 import type { Notices } from "./useNotices";
@@ -13,10 +16,34 @@ import type { Notices } from "./useNotices";
 export function NoticeBar({ notices }: { notices: Notices }) {
   const { t } = useI18n();
   const { notice, closing } = notices.state;
+  /* Which surface is in front. `useSyncExternalStore` rather than an effect:
+     the answer must be read during the render that draws the bar, or a message
+     raised in the same tick a dialog opens is drawn on the page first and
+     jumps into the dialog afterwards. */
+  const dialog = useSyncExternalStore(watchFrontDialog, frontDialog, () => null);
+  /* A host of its own at the top of the dialog. `createPortal` appends, and the
+     bar belongs above the heading rather than below the footer — and no dialog
+     is asked to carry a slot for it, which is what keeps this one rule instead
+     of seven. */
+  const [host, setHost] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!dialog) {
+      setHost(null);
+      return;
+    }
+    const slot = document.createElement("div");
+    slot.className = "dialog-notice";
+    dialog.prepend(slot);
+    setHost(slot);
+    return () => {
+      slot.remove();
+      setHost(null);
+    };
+  }, [dialog]);
 
   if (!notice) return null;
 
-  return (
+  const bar = (
     <div
       className={`notice ${notice.kind}${closing ? " leaving" : ""}`}
       role={notice.kind === "error" ? "alert" : "status"}
@@ -45,4 +72,14 @@ export function NoticeBar({ notices }: { notices: Notices }) {
       <button onClick={notices.actions.dismiss}>{t("common.close")}</button>
     </div>
   );
+
+  /* Into the dialog when one is open, and as its first child so it sits at the
+     top of the box the reader is already looking at. The stylesheet gives it
+     the dialog's own corners and bleeds it to the edges; nothing else about the
+     bar changes, because it is the same bar. */
+  if (!dialog) return bar;
+  // The host arrives one render after the dialog does. Drawing the bar on the
+  // page in between would put it on the blurred backdrop for a frame, which is
+  // the thing being repaired.
+  return host ? createPortal(bar, host) : null;
 }
