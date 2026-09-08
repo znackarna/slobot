@@ -990,9 +990,24 @@
    Bled to the dialog's own edges by its padding, and the top corners are the
    dialog's less its border, which is how an inset radius meets an outset one.
    18 px below, the same gap the heading gives its sentence's content. */
-.dialog-notice { margin: -24px -26px 18px; }
-.dialog-notice .notice {
-  border-radius: calc(var(--r-large) - 1px) calc(var(--r-large) - 1px) 0 0;
+/* **No negative margins.** They were `-24px -26px`, the padding `.dialog`
+   carries — and a dialog with padding of its own, as the language model's
+   preview has, then pushed the bar out through its own top edge, clipped
+   against the window behind. The bar takes whatever box it is put in. */
+.dialog-notice { margin-bottom: 18px; }
+/* A slot the dialog placed itself sits exactly where it was placed — no gap of
+   its own, so the bar lands on the boundary the dialog already draws rather
+   than floating below it. It takes no room at all until there is something to
+   say. Asked for on 8 September: *dej tomu rovne ostre rohy a posad to presne
+   na tu linku*. */
+.dialog-notice-slot { flex: 0 0 auto; }
+.dialog-notice-slot:empty { display: none; }
+.dialog-notice .notice,
+.dialog-notice-slot .notice {
+  /* Square. Inside a dialog the bar is a band across it, not a card lying on
+     it, and a rounded corner over a straight edge is what made it read as a
+     second thing on top of the first. */
+  border-radius: 0;
   /* Inside a dialog nothing can be painted over it, so the raising is not
      needed — and leaving it would lift the bar over a dialog opened on top of
      this one. */

@@ -31,6 +31,15 @@ export function NoticeBar({ notices }: { notices: Notices }) {
       setHost(null);
       return;
     }
+    /* Where the dialog says, if it says. A dialog with a header of its own —
+       a title, a row of tabs — wants the bar under it rather than above the
+       first word, and only the dialog knows where that is. One empty element
+       marks it; every other dialog says nothing and gets the top. */
+    const marked = dialog.querySelector<HTMLElement>(".dialog-notice-slot");
+    if (marked) {
+      setHost(marked);
+      return () => setHost(null);
+    }
     const slot = document.createElement("div");
     slot.className = "dialog-notice";
     dialog.prepend(slot);

@@ -162,6 +162,14 @@ export function AiPreviewDialog({ ai }: { ai: AiWorkspace }) {
           </button>
         </nav>
 
+        {/* Where a message is said while this dialog is in front. The bar goes
+            to whatever surface the reader is looking at (`NoticeBar`), and its
+            default is the top of the dialog — above the title, which for this
+            one is above a heading and a row of tabs the reader needs to keep
+            seeing. Under them is where the content starts, and where he drew
+            the line on 8 September. Empty until there is something to say. */}
+        <div className="dialog-notice-slot" />
+
         {/* The three toolbars pick a variant of a document. With no
             improved transcript there is no document to vary, so they stay
             down and the empty state below carries the whole tab — a length

@@ -44,6 +44,23 @@ function Dialog({ open }: { open: boolean }) {
   );
 }
 
+/** A dialog shaped like the language model's preview: a heading, a row of tabs,
+ *  and the content under them. */
+function DialogWithSlot() {
+  const dialog = useDialog<HTMLDivElement>(undefined, true);
+  return (
+    <div ref={dialog} className="dialog" role="dialog" aria-modal="true">
+      <h2>Vylepšený přepis</h2>
+      <nav>
+        <button>Přepis</button>
+        <button>Shrnutí</button>
+      </nav>
+      <div className="dialog-notice-slot" />
+      <p>All right, Petunia.</p>
+    </div>
+  );
+}
+
 function show(open: boolean) {
   return render(
     <I18nProvider>
@@ -91,6 +108,27 @@ describe("where a message is said", () => {
 
     expect(document.querySelectorAll(".notice").length).toBe(1);
     expect(screen.getAllByText("Uloženo.").length).toBe(1);
+  });
+
+  /** A dialog with a header of its own says where it wants the bar, and the
+   *  top of the box is above a heading and a row of tabs the reader needs to
+   *  keep seeing. The default is the top; the slot overrides it. */
+  test("goes where the dialog says, when it says", () => {
+    render(
+      <I18nProvider>
+        <div className="dialog-overlay">
+          <DialogWithSlot />
+        </div>
+        <NoticeBar notices={notices()} />
+      </I18nProvider>
+    );
+
+    const dialog = document.querySelector(".dialog")!;
+    const bar = dialog.querySelector(".notice")!;
+    expect(bar.closest(".dialog-notice-slot")).not.toBeNull();
+    // Under the tabs, not above the heading.
+    const tabs = dialog.querySelector("nav")!;
+    expect(tabs.compareDocumentPosition(bar) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   /** And it comes back to the page when the dialog goes. */
