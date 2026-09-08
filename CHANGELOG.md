@@ -11,6 +11,11 @@ altered, not how, not which file. Entries before 1.2.6 are written the old way
 and are left as they are; they are not a model for the next one. The mechanism
 belongs in `docs/history/`, which is what that folder is for.
 
+## 1.2.26 — 8 September 2026
+
+- **A video's audio can be saved**, in MP3, M4A or WAV — chosen on the row that writes it.
+- **A message no longer covers the dialog it belongs to.**
+
 ## 1.2.25 — 2 September 2026
 
 - **A recording in two languages is transcribed in both**, instead of losing the half nobody asked about.
