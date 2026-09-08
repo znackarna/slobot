@@ -229,7 +229,7 @@ export const csDetail = {
     "Přepis se od vytvoření tohoto dokumentu změnil. Starší výsledek můžete stále uložit, nebo ho vytvořit znovu.",
 
   "detail.saved.improved": "Vylepšený přepis byl uložen do {path}.",
-  "detail.saved.summary": "Shrnutí byl uložen do {path}.",
+  "detail.saved.summary": "Shrnutí bylo uloženo do {path}.",
   "detail.saved.translation": "Překlad byl uložen do {path}.",
   "detail.saved.custom": "Dokument byl uložen do {path}.",
 
