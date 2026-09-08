@@ -18,8 +18,8 @@ import { useDialog } from "./useDialog";
 import { CheckBox } from "./CheckBox";
 import InfoNote from "./InfoNote";
 import type { Recording, UserMessage } from "./types";
-import { saveRecording } from "./saveRecording";
-import type { SaveShape } from "./saveRecording";
+import { AUDIO_FORMATS, defaultAudioFormat, saveRecording } from "./saveRecording";
+import type { AudioFormat, SaveShape } from "./saveRecording";
 
 /** The shapes, their words and the line under each — spelled out rather than
  *  built from the shape's name, so `i18n:check` can see the keys and catch a
@@ -51,6 +51,11 @@ export function SaveRecordingDialog({
 }) {
   const { t } = useI18n();
   const [ticked, setTicked] = useState<SaveShape[]>(["audio"]);
+  /* Read from the recording rather than fixed, so a source the core can write
+     opens on its own container and the export stays a copy. */
+  const [audio, setAudio] = useState<AudioFormat>(() =>
+    recording ? defaultAudioFormat(recording.path) : "mp3"
+  );
   const [busy, setBusy] = useState(false);
   const dialog = useDialog<HTMLDivElement>(onClose, recording !== null);
 
@@ -82,6 +87,7 @@ export function SaveRecordingDialog({
     await saveRecording({
       recording,
       shapes: chosen,
+      audio,
       chooseFile,
       chooseFolder,
       onError,
@@ -126,6 +132,34 @@ export function SaveRecordingDialog({
                 <span className="save-choice-note">
                   {offered(shape) ? t(note) : t("save.needsTranscript")}
                 </span>
+                {/* **The container, on the row that writes it.** The name was
+                    built from the source's extension and the core can write
+                    only these three, so a video asked for `.mp4`, was refused,
+                    and the message said to choose another — with nowhere to
+                    choose. The buttons are the row's own, not a second
+                    question: ticking the row is still the whole decision, and
+                    this only says in what.
+
+                    Inside the `<label>` and stopping the press, or clicking a
+                    format would toggle the box the label is for. */}
+                {shape === "audio" && (
+                  <span className="save-formats">
+                    {AUDIO_FORMATS.map((format) => (
+                      <button
+                        key={format}
+                        type="button"
+                        className={`save-format ${audio === format ? "chosen" : ""}`}
+                        aria-pressed={audio === format}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          setAudio(format);
+                        }}
+                      >
+                        {format.toUpperCase()}
+                      </button>
+                    ))}
+                  </span>
+                )}
               </label>
             </li>
           ))}

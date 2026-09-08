@@ -279,6 +279,30 @@
    stands for to choose it. */
 .clip-shape-note,
 .save-choice-note { font-size: 12.5px; color: var(--text-quiet); }
+/* The container the audio is written in, on the row that writes it. A third
+   line of the same grid column rather than a control beside the name: the
+   question is *in what*, which follows *whether*, and a row that answers two
+   questions on one line reads as two rows.
+
+   `.choice`'s geometry would be far too big for three words, so these take the
+   segmented control's instead — 26 px against its 30, because that one sits in
+   a track and this one stands in a list. */
+.save-formats { grid-column: 2; display: flex; gap: 6px; margin-top: 8px; }
+.save-format {
+  height: 26px; padding: 0 11px;
+  border: 1px solid var(--line); border-radius: var(--r-pill);
+  background: transparent; color: var(--text-quiet);
+  font: inherit; font-size: 12px; font-weight: 650;
+  cursor: pointer;
+  transition: background var(--hover-duration) var(--hover-ease),
+    color var(--hover-duration) var(--hover-ease),
+    border-color var(--hover-duration) var(--hover-ease);
+}
+.save-format:hover { background: var(--muted); color: var(--text); }
+.save-format.chosen {
+  border-color: transparent; background: var(--accent-light); color: var(--accent);
+}
+
 /* There is no finished state to draw: a fill that is done is said in the
    notice bar like every other confirmation, and this bar simply goes. */
 

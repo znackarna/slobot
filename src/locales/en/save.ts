@@ -5,7 +5,7 @@ export const enSave: Partial<Record<keyof typeof csSave, string>> = {
   "save.title": "How would you like to save the recording?",
   "save.text": "You can pick more than one at a time.",
   "save.shape.audio": "Audio",
-  "save.shapeNote.audio": "The recording itself",
+  "save.shapeNote.audio": "The audio on its own",
   "save.shape.txt": "Text",
   "save.shapeNote.txt": "Plain transcript",
   "save.shape.md": "Markdown",

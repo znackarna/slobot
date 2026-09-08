@@ -3,7 +3,7 @@ export const csSave = {
   "save.title": "Jak chcete nahrávku uložit?",
   "save.text": "Můžete zvolit více možností najednou.",
   "save.shape.audio": "Zvuk",
-  "save.shapeNote.audio": "Původní nahrávka",
+  "save.shapeNote.audio": "Samotný zvuk",
   "save.shape.txt": "Text",
   "save.shapeNote.txt": "Čistý přepis",
   "save.shape.md": "Markdown",
